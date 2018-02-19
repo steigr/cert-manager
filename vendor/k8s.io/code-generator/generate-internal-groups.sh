@@ -71,35 +71,35 @@ done
 
 if [ "${GENS}" = "all" ] || grep -qw "deepcopy" <<<"${GENS}"; then
   echo "Generating deepcopy funcs"
-  ${GOPATH}/bin/deepcopy-gen --input-dirs $(codegen::join , "${ALL_FQ_APIS[@]}") -O zz_generated.deepcopy --bounding-dirs ${INT_APIS_PKG},${EXT_APIS_PKG} "$@"
+  ${GOBIN:-$GOPATH/bin}/deepcopy-gen --input-dirs $(codegen::join , "${ALL_FQ_APIS[@]}") -O zz_generated.deepcopy --bounding-dirs ${INT_APIS_PKG},${EXT_APIS_PKG} "$@"
 fi
 
 if [ "${GENS}" = "all" ] || grep -qw "defaulter" <<<"${GENS}"; then
   echo "Generating defaulters"
-  ${GOPATH}/bin/defaulter-gen  --input-dirs $(codegen::join , "${EXT_FQ_APIS[@]}") -O zz_generated.defaults "$@"
+  ${GOBIN:-$GOPATH/bin}/defaulter-gen  --input-dirs $(codegen::join , "${EXT_FQ_APIS[@]}") -O zz_generated.defaults "$@"
 fi
 
 if [ "${GENS}" = "all" ] || grep -qw "conversion" <<<"${GENS}"; then
   echo "Generating conversions"
-  ${GOPATH}/bin/conversion-gen --input-dirs $(codegen::join , "${ALL_FQ_APIS[@]}") -O zz_generated.conversion "$@"
+  ${GOBIN:-$GOPATH/bin}/conversion-gen --input-dirs $(codegen::join , "${ALL_FQ_APIS[@]}") -O zz_generated.conversion "$@"
 fi
 
 if [ "${GENS}" = "all" ] || grep -qw "client" <<<"${GENS}"; then
   echo "Generating clientset for ${GROUPS_WITH_VERSIONS} at ${OUTPUT_PKG}/clientset"
   if [ -n "${INT_APIS_PKG}" ]; then
-    ${GOPATH}/bin/client-gen --clientset-name internalversion --input-base "" --input $(codegen::join , $(printf '%s/ ' "${INT_FQ_APIS[@]}")) --clientset-path ${OUTPUT_PKG}/clientset "$@"
+    ${GOBIN:-$GOPATH/bin}/client-gen --clientset-name internalversion --input-base "" --input $(codegen::join , $(printf '%s/ ' "${INT_FQ_APIS[@]}")) --clientset-path ${OUTPUT_PKG}/clientset "$@"
   fi
-  ${GOPATH}/bin/client-gen --clientset-name versioned --input-base "" --input $(codegen::join , "${EXT_FQ_APIS[@]}") --clientset-path ${OUTPUT_PKG}/clientset "$@"
+  ${GOBIN:-$GOPATH/bin}/client-gen --clientset-name versioned --input-base "" --input $(codegen::join , "${EXT_FQ_APIS[@]}") --clientset-path ${OUTPUT_PKG}/clientset "$@"
 fi
 
 if [ "${GENS}" = "all" ] || grep -qw "lister" <<<"${GENS}"; then
   echo "Generating listers for ${GROUPS_WITH_VERSIONS} at ${OUTPUT_PKG}/listers"
-  ${GOPATH}/bin/lister-gen --input-dirs $(codegen::join , "${ALL_FQ_APIS[@]}") --output-package ${OUTPUT_PKG}/listers "$@"
+  ${GOBIN:-$GOPATH/bin}/lister-gen --input-dirs $(codegen::join , "${ALL_FQ_APIS[@]}") --output-package ${OUTPUT_PKG}/listers "$@"
 fi
 
 if [ "${GENS}" = "all" ] || grep -qw "informer" <<<"${GENS}"; then
   echo "Generating informers for ${GROUPS_WITH_VERSIONS} at ${OUTPUT_PKG}/informers"
-  ${GOPATH}/bin/informer-gen \
+  ${GOBIN:-$GOPATH/bin}/informer-gen \
            --input-dirs $(codegen::join , "${ALL_FQ_APIS[@]}") \
            --versioned-clientset-package ${OUTPUT_PKG}/clientset/versioned \
            --internal-clientset-package ${OUTPUT_PKG}/clientset/internalversion \
